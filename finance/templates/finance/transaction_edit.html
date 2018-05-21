@@ -1,0 +1,143 @@
+{% extends 'finance/base.html' %}
+{% load i18n %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block content_header %}
+<h1>Transactions
+  <small>
+    {% if object %}
+    {% blocktrans with object_name=object.title %}Edit {{ object.title }}{% endblocktrans %}
+    {% else %}
+    {% blocktrans %}Add new {{ submenu }}{% endblocktrans %}
+    {% endif %}
+  </small>
+</h1>
+<ol class="breadcrumb">
+  <li><a href="/">Home</a></li>
+  <li><a href="{% url 'transactions' %}">{% trans 'Transactions' %}</a></li>
+  {% if object %}
+  <li><a href="{{ object.get_absolute_url }}">{{ object }}</a></li>
+  <li class="active">{% trans 'Edit' %}</li>
+  {% else %}
+  <li class="active">{% trans 'Create' %}</li>
+  {% endif %}
+</ol>
+{% endblock %}
+
+{% block content %}
+<div class="box">
+  <div class="box-header with-border">
+  <h3 class="box-title">{% trans 'Transaction Details' %}</h3>
+</div>
+<div class="box-body">
+    <form method="post" class="form-horizontal">
+      {% csrf_token %}
+      <div class="form-group{% if form.title.errors %} has-error{% endif %}">
+        <label class="col-sm-2 control-label" for="{{ form.title.id_for_label }}">{{ form.title.label }}</label>
+        <div class="col-sm-8">
+          {{ form.title|add_class:"form-control" }}
+          {% for error in form.title.errors %}
+          <span class="help-block">{{ error }}</span>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="form-group{% if form.source_account.errors %} has-error{% endif %}">
+        <label class="col-sm-2 control-label" for="{{ form.source_account.id_for_label }}">{{ form.source_account.label }}</label>
+        <div class="col-sm-8">
+          {{ form.source_account|add_class:"form-control" }}
+          {% for error in form.source_account.errors %}
+          <span class="help-block">{{ error }}</span>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="form-group{% if form.destination_account.errors %} has-error{% endif %}">
+        <label class="col-sm-2 control-label" for="{{ form.destination_account.id_for_label }}">{{ form.destination_account.label }}</label>
+        <div class="col-sm-8">
+          {{ form.destination_account|add_class:"form-control" }}
+          {% for error in form.destination_account.errors %}
+          <span class="help-block">{{ error }}</span>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="form-group{% if form.amount.errors %} has-error{% endif %}">
+        <label class="col-sm-2 control-label" for="{{ form.amount.id_for_label }}">{{ form.amount.label }}</label>
+        <div class="col-sm-8">
+          {{ form.amount|add_class:"form-control" }}
+          {% for error in form.amount.errors %}
+          <span class="help-block">{{ error }}</span>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="form-group{% if form.date.errors %} has-error{% endif %}">
+        <label class="col-sm-2 control-label" for="{{ form.date.id_for_label }}">{{ form.date.label }}</label>
+        <div class="col-sm-8">
+          {{ form.date|add_class:"form-control date-input" }}
+          {% for error in form.date.errors %}
+          <span class="help-block">{{ error }}</span>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="form-group{% if form.value_date.errors %} has-error{% endif %}">
+        <label class="col-sm-2 control-label" for="{{ form.value_date.id_for_label }}">{{ form.value_date.label }}</label>
+        <div class="col-sm-8">
+          {{ form.value_date|add_class:"form-control date-input" }}
+          {% for error in form.value_date.errors %}
+          <span class="help-block">{{ error }}</span>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="form-group{% if form.category.errors %} has-error{% endif %}">
+        <label class="col-sm-2 control-label" for="{{ form.category.id_for_label }}">{{ form.category.label }}</label>
+        <div class="col-sm-8">
+          {{ form.category|add_class:"form-control" }}
+          {% for error in form.category.errors %}
+          <span class="help-block">{{ error }}</span>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="form-group{% if form.notes.errors %} has-error{% endif %}">
+        <label class="col-sm-2 control-label" for="{{ form.notes.id_for_label }}">{{ form.notes.label }}</label>
+        <div class="col-sm-8">
+          {{ form.notes|add_class:"form-control" }}
+          {% for error in form.notes.errors %}
+          <span class="help-block">{{ error }}</span>
+          {% endfor %}
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary col-md-offset-2">{% if object %}{% trans 'Update' %}{% else %}{% trans 'Create' %}{% endif %}</button>
+    </form>
+</div>
+</div>
+{% endblock %}
+
+{% block stylesheets %}
+<link rel="stylesheet" href="{% static 'vendor/css/bootstrap-datepicker.min.css' %}">
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'vendor/js/bootstrap-datepicker.min.js' %}"></script>
+<script src="{% static 'vendor/js/bootstrap3-typeahead.min.js' %}"></script>
+
+<script>
+$(function() {
+  $('.date-input').datepicker({
+  autoclose: true,
+  format: 'yyyy-mm-dd',
+  orientation: 'bottom'
+
+  });
+  if ($('input#id_source_account').length > 0) {
+      $.getJSON('{% url 'api_accounts' 'FOREIGN' %}').done(function (data) {
+          $('#id_source_account').typeahead({source: data});
+      });
+  }
+  if ($('input#id_destination_account').length > 0) {
+      $.getJSON('{% url 'api_accounts' 'FOREIGN' %}').done(function (data) {
+          $('#id_destination_account').typeahead({source: data});
+      });
+  }
+  $('.date-input').attr('autocomplete', 'off');
+})
+</script>
+{% endblock %}

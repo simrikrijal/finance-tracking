@@ -1,0 +1,21 @@
+#navbar-user {
+    height: unset;
+}
+.pagination select {
+    display:inline-block;
+    width:120px;
+    border-radius:0;
+    float: left;
+    vertical-align: top;
+    margin-left: -1px;
+}
+.force-parent-lh {
+  line-height: inherit !important;
+}
+
+/* fix for adminlte issue https://github.com/almasaeed2010/AdminLTE/issues/1607 */
+@media (max-width: 767px) {
+  .skin-blue-light .main-header .navbar .dropdown-menu li a {
+    color: unset !important;
+  }
+}
